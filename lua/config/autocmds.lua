@@ -5,8 +5,12 @@
 -- This file defines custom user commands and automatic behaviors (events).
 -- It relies on helper functions defined in 'core.utils'.
 
-local api   = vim.api
-local utils = require("util.utils")
+local api                = vim.api
+local utils              = require("util.utils")
+
+-- Load User Environment
+local env_status, env    = pcall(require, "config.user_env")
+local env_config         = env_status and env.config or {}
 
 -- ==========================================================================
 -- 1. USER COMMANDS
@@ -238,5 +242,15 @@ api.nvim_create_autocmd("BufEnter", {
         if ft ~= "NvimTree" and ft ~= "TelescopePrompt" and name ~= "" then
             -- print(name)
         end
+    end,
+})
+
+-- Starts the Toggler Fucntion
+api.nvim_create_autocmd("InsertEnter", {
+    once = true, -- Ensures this only runs the first time you enter Insert mode
+    callback = function()
+        local toggler = require("util.toggler") -- Replace with your actual file path
+        toggler.setup(env_config.toggles or {})
+        vim.keymap.set({"n", "v"}, "<leader>t", toggler.toggle, { desc = "Toggle word" })
     end,
 })

@@ -10,20 +10,12 @@ local map                = vim.keymap.set
 local opts               = { noremap = true, silent = true }
 
 -- ==========================================================================
--- 1. CUSTOM MODULES (Zen & Toggler)
+-- 1. CUSTOM MODULES (Zen)
 -- ==========================================================================
 
 -- Load User Environment
 local env_status, env    = pcall(require, "config.user_env")
 local env_config         = env_status and env.config or {}
-
--- Load Toggler (Custom module)
-local status_ok, toggler = pcall(require, "util.toggler")
-if status_ok then
-    toggler.setup(env_config.toggles or {})
-else
-    vim.notify("util.toggler not found.", vim.log.levels.WARN)
-end
 
 -- Load Zen Mode
 pcall(require, "util.zen")
@@ -31,6 +23,31 @@ pcall(require, "util.zen")
 -- ==========================================================================
 -- 2. GENERAL KEYMAPS
 -- ==========================================================================
+
+if env_config.bad_habbits then
+    -- Getting Rid Of Bad Habbits
+    map("n" , "<Up>"    , "<Nop>"               , opts)
+    map("i" , "<Up>"    , "<Nop>"               , opts)
+    map("x" , "<Up>"    , "<Nop>"               , opts)
+    map("v" , "<Up>"    , "<Nop>"               , opts)
+    map("n" , "<Down>"  , "<Nop>"               , opts)
+    map("i" , "<Down>"  , "<Nop>"               , opts)
+    map("x" , "<Down>"  , "<Nop>"               , opts)
+    map("v" , "<Down>"  , "<Nop>"               , opts)
+    map("n" , "<Left>"  , "<Nop>"               , opts)
+    map("i" , "<Left>"  , "<Nop>"               , opts)
+    map("x" , "<Left>"  , "<Nop>"               , opts)
+    map("v" , "<Left>"  , "<Nop>"               , opts)
+    map("n" , "<Right>" , "<Nop>"               , opts)
+    map("i" , "<Right>" , "<Nop>"               , opts)
+    map("x" , "<Right>" , "<Nop>"               , opts)
+    map("v" , "<Right>" , "<Nop>"               , opts)
+end
+-- Better Navigation in insert mode
+map("i" , "<C-h>"       , "<Left>"              , opts)
+map("i" , "<C-l>"       , "<Right>"             , opts)
+map("i" , "<C-j>"       , "<Down>"              , opts)
+map("i" , "<C-k>"       , "<Up>"                , opts)
 
 -- Window Navigation
 -- --------------------------------------------------------------------------

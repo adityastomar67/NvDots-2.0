@@ -28,6 +28,7 @@ env.config = {
     enable_treesitter                   = true,         -- Enable Treesitter highlighting
     enable_statusline                   = false,        -- Enable Statusline (lualine/airline)
     enable_copilot                      = false,        -- Enable GitHub Copilot
+    bad_habbits                         = true,         -- Remove the bad habbits of using arrow keys
 
     -- ----------------------------------------------------------------------
     -- Path Settings

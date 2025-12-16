@@ -141,18 +141,16 @@ function Dash.setup()
                 vim.cmd("enew")
             end, opts)
 
-            -- Find File (Telescope)
+            -- Find File (Snacks.nvim)
             vim.keymap.set("n", "f", function()
-                -- GUARD CLAUSE: Check if Telescope is installed
-                -- vim.fn.exists(":Telescope") returns 2 if the command exists
-                if vim.fn.exists(":Telescope") == 0 then
-                    vim.notify("Dashboard: 'nvim-telescope/telescope.nvim' is not installed.", 
-                    vim.log.levels.WARN)
+                -- GUARD CLAUSE: Check if Snacks global is available
+                if _G.Snacks == nil then
+                    vim.notify("Dashboard: 'folke/snacks.nvim' is not loaded.", vim.log.levels.WARN)
                     return
                 end
 
                 restore_cursor()
-                vim.cmd("Telescope find_files")
+                Snacks.picker.files()
             end, opts)
 
             -- Quit

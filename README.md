@@ -37,3 +37,9 @@ NvDots-2.0
 │       ├── utils.lua          # Helper functions
 │       └── zen.lua            # Zen mode logic
 └── README.md
+
+
+# TODO
+## Bad habbits of using arrow
+## Custom snippets with multiple options using lua snip snippets
+
