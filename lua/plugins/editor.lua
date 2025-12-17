@@ -77,7 +77,7 @@ return {
                     "--line-number",
                     "--column"
                 },
-                pattern = [[\b(KEYWORDS) :]],
+                pattern = [[\b(KEYWORDS)\b\s*:]],
             },
         },
     },

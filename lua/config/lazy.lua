@@ -59,6 +59,37 @@ require("lazy").setup(
         },
         change_detection = {
             notify  = false         -- Don't spam notifications on config change (Options: true, false)
+        },
+        performance = {
+            rtp     = {
+                disabled_plugins = {
+                    "2html_plugin",
+                    "getscript",
+                    "getscriptPlugin",
+                    "gzip",
+                    "logipat",
+                    "matchit",
+                    "netrw",
+                    "tohtml",
+                    "netrwFileHandlers",
+                    "loaded_remote_plugins",
+                    "loaded_tutor_mode_plugin",
+                    "netrwPlugin",
+                    "netrwSettings",
+                    "rrhelper",
+                    "man",
+                    "spellfile",
+                    "tar",
+                    "tarPlugin",
+                    "vimball",
+                    "vimballPlugin",
+                    "zip",
+                    "tutor",
+                    "rplugin",
+                    "zipPlugin",
+                    "matchparen", -- matchparen.nvim disables the default
+                }
+            }
         }
     }
 )

@@ -25,10 +25,10 @@ api.nvim_create_user_command("Cls",
     { desc = "Remove trailing whitespace" }
 )
 
-api.nvim_create_user_command("Dos2Unix",
-    utils.dos_to_unix,
-    { desc = "Convert DOS line endings to Unix (CRLF -> LF)" }
-)
+-- api.nvim_create_user_command("Dos2Unix",
+--     utils.dos_to_unix,
+--     { desc = "Convert DOS line endings to Unix (CRLF -> LF)" }
+-- )
 
 api.nvim_create_user_command("Squeeze",
     utils.squeeze_blank_lines,
@@ -42,27 +42,27 @@ api.nvim_create_user_command("Reindent",
 
 -- Buffer Management
 -- --------------------------------------------------------------------------
-api.nvim_create_user_command("BufOnly",
-    utils.buf_only,
-    { desc = "Close all other buffers except current" }
-)
+-- api.nvim_create_user_command("BufOnly",
+--     utils.buf_only,
+--     { desc = "Close all other buffers except current" }
+-- )
 
 api.nvim_create_user_command("Scratch",
     utils.create_scratch,
     { desc = "Create a new scratch buffer" }
 )
 
-api.nvim_create_user_command("CloneBuffer",
-    "new | 0put =getbufline('#',1,'$')",
-    { desc = "Clone current buffer content to a new split" }
-)
+-- api.nvim_create_user_command("CloneBuffer",
+--     "new | 0put =getbufline('#',1,'$')",
+--     { desc = "Clone current buffer content to a new split" }
+-- )
 
 -- Miscellaneous / System
 -- --------------------------------------------------------------------------
-api.nvim_create_user_command("Run",
-    utils.run_code,
-    { desc = "Run code based on filetype (defined in utils)" }
-)
+-- api.nvim_create_user_command("Run",
+--     utils.run_code,
+--     { desc = "Run code based on filetype (defined in utils)" }
+-- )
 
 api.nvim_create_user_command("Blockwise",
     utils.blockwise_clipboard,
@@ -74,15 +74,15 @@ api.nvim_create_user_command("SaveAsRoot",
     { desc = "Save current file as root (requires doas/sudo)" }
 )
 
-api.nvim_create_user_command("Syntax",
-    "syntax sync minlines=64",
-    { desc = "Force re-sync syntax highlighting" }
-)
+-- api.nvim_create_user_command("Syntax",
+--     "syntax sync minlines=64",
+--     { desc = "Force re-sync syntax highlighting" }
+-- )
 
-api.nvim_create_user_command("Mappings",
-    "edit ~/.config/nvim/lua/config/keymaps.lua",
-    { desc = "Quickly edit keymaps configuration" }
-)
+-- api.nvim_create_user_command("Mappings",
+--     "edit ~/.config/nvim/lua/config/keymaps.lua",
+--     { desc = "Quickly edit keymaps configuration" }
+-- )
 
  -- Create Command for Editing Snippets
 api.nvim_create_user_command("LuaSnipEdit", 
@@ -185,24 +185,24 @@ api.nvim_create_autocmd("BufWritePre", {
 -- Terminal Settings
 -- --------------------------------------------------------------------------
 -- Removes line numbers and enters Insert mode automatically in terminal buffers.
-api.nvim_create_autocmd("TermOpen", {
-    group                                       = general,
-    pattern                                     = "*",
-    callback                                    = function()
-        vim.opt_local.number                    = false
-        vim.opt_local.relativenumber            = false
-        vim.opt_local.signcolumn                = "no"
-        vim.cmd("startinsert")
-    end,
-})
+-- api.nvim_create_autocmd("TermOpen", {
+--     group                                       = general,
+--     pattern                                     = "*",
+--     callback                                    = function()
+--         vim.opt_local.number                    = false
+--         vim.opt_local.relativenumber            = false
+--         vim.opt_local.signcolumn                = "no"
+--         vim.cmd("startinsert")
+--     end,
+-- })
 
 -- Update Header
 -- --------------------------------------------------------------------------
 -- Updates "Last Modified" timestamp in file headers (requires utils.change_header).
-api.nvim_create_autocmd("BufWritePre", {
-    group                                       = general,
-    callback                                    = utils.change_header,
-})
+-- api.nvim_create_autocmd("BufWritePre", {
+--     group                                       = general,
+--     callback                                    = utils.change_header,
+-- })
 
 -- Custom Filetypes
 -- --------------------------------------------------------------------------
@@ -233,17 +233,17 @@ api.nvim_create_autocmd("BufEnter", {
 -- Echo Filename (Optional)
 -- --------------------------------------------------------------------------
 -- Echoes the filename when entering a buffer (Commented out by default).
-api.nvim_create_autocmd("BufEnter", {
-    group                                       = general,
-    pattern                                     = "*",
-    callback                                    = function()
-        local name                              = vim.fn.expand("%:t")
-        local ft                                = vim.bo.filetype
-        if ft ~= "NvimTree" and ft ~= "TelescopePrompt" and name ~= "" then
-            -- print(name)
-        end
-    end,
-})
+-- api.nvim_create_autocmd("BufEnter", {
+--     group                                       = general,
+--     pattern                                     = "*",
+--     callback                                    = function()
+--         local name                              = vim.fn.expand("%:t")
+--         local ft                                = vim.bo.filetype
+--         if ft ~= "NvimTree" and ft ~= "TelescopePrompt" and name ~= "" then
+--             print(name)
+--         end
+--     end,
+-- })
 
 -- Starts the Toggler Fucntion
 api.nvim_create_autocmd("InsertEnter", {
