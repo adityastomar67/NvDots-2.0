@@ -193,6 +193,41 @@ Keys.nvim_tree = function(bufnr)
     map("n", "<",     function() vim.cmd("NvimTreeResize -10") end, opt("Collapse Width"))
 end
 
+-- CMP (Autocomplete)
+-- --------------------------------------------------------------------------
+-- NOTE: This function is used inside the cmp.setup() table in completion.lua
+Keys.cmp = function(cmp, ls)
+    return {
+        -- 1. Escape Key: To get out of the completions menu
+        ["<Esc>"] = cmp.mapping.abort(),
+
+        -- 2. Enter Key: Confirm selection
+        -- (select = false means you must manually highlight an item before pressing Enter)
+        ["<CR>"]  = cmp.mapping.confirm({ select = false }),
+
+        -- 3. Tab/Shift-Tab (Navigate > Expand > Jump)
+        ["<Tab>"] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+                cmp.select_next_item()
+            elseif ls.expand_or_jumpable() then
+                ls.expand_or_jump()
+            else
+                fallback()
+            end
+        end, { "i", "s" }),
+
+        ["<S-Tab>"] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+                cmp.select_prev_item()
+            elseif ls.jumpable(-1) then
+                ls.jump(-1)
+            else
+                fallback()
+            end
+        end, { "i", "s" }),
+    }
+end
+
 -- ==========================================================================
 -- 4. COMMANDS & ABBREVIATIONS
 -- ==========================================================================

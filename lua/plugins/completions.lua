@@ -133,34 +133,7 @@ return {
                 },
 
                 -- Key Mappings
-                mapping = cmp.mapping.preset.insert({
-                    -- 1. Escape Key: To get out of the completeions menu
-                    ["<Esc>"]                   = cmp.mapping.abort(),
-
-                    -- 2. Enter Key: Confirm selection (Select = false means you must manually highlight an item)
-                    ["<CR>"]                    = cmp.mapping.confirm({ select = false }),
-
-                    -- 3. Tab/Shift-Tab (Navigate > Expand > Jump)
-                    ["<Tab>"] = cmp.mapping(function(fallback)
-                        if cmp.visible() then 
-                            cmp.select_next_item()
-                        elseif luasnip.expand_or_jumpable() then 
-                            luasnip.expand_or_jump()
-                        else 
-                            fallback() 
-                        end
-                    end, { "i", "s" }),
-
-                    ["<S-Tab>"] = cmp.mapping(function(fallback)
-                        if cmp.visible() then 
-                            cmp.select_prev_item()
-                        elseif luasnip.jumpable(-1) then 
-                            luasnip.jump(-1)
-                        else 
-                            fallback() 
-                        end
-                    end, { "i", "s" }),
-                }),
+                mapping = cmp.mapping.preset.insert(require("config.keymaps").cmp(cmp, luasnip)),
 
                 -- Formatting (Icons + Text)
                 formatting = {
