@@ -6,7 +6,6 @@
 -- It relies on helper functions defined in 'core.utils'.
 
 local api                = vim.api
-local utils              = require("util.utils")
 
 -- Load User Environment
 local env_status, env    = pcall(require, "config.user_env")
@@ -20,35 +19,45 @@ local env_config         = env_status and env.config or {}
 -- --------------------------------------------------------------------------
 api.nvim_create_user_command("Cls",
     function()
-        utils.preserve('%s/\\s\\+$//ge')
+        require("util.utils").preserve('%s/\\s\\+$//ge')
     end,
     { desc = "Remove trailing whitespace" }
 )
 
 -- api.nvim_create_user_command("Dos2Unix",
---     utils.dos_to_unix,
+--     function()
+--         require("util.utils").dos_to_unix(),
+--     end,
 --     { desc = "Convert DOS line endings to Unix (CRLF -> LF)" }
 -- )
 
 api.nvim_create_user_command("Squeeze",
-    utils.squeeze_blank_lines,
+    function()
+        require("util.utils").squeeze_blank_lines()
+    end,
     { desc = "Remove consecutive blank lines" }
 )
 
 api.nvim_create_user_command("Reindent",
-    utils.reindent,
+    function()
+        require("util.utils").reindent()
+    end,
     { desc = "Re-indent the entire file" }
 )
 
 -- Buffer Management
 -- --------------------------------------------------------------------------
 -- api.nvim_create_user_command("BufOnly",
---     utils.buf_only,
+--     funtion()
+--         require("util.utils").buf_only(),
+--     end,
 --     { desc = "Close all other buffers except current" }
 -- )
 
 api.nvim_create_user_command("Scratch",
-    utils.create_scratch,
+    function()
+        require("util.utils").create_scratch()
+    end,
     { desc = "Create a new scratch buffer" }
 )
 
@@ -60,12 +69,16 @@ api.nvim_create_user_command("Scratch",
 -- Miscellaneous / System
 -- --------------------------------------------------------------------------
 -- api.nvim_create_user_command("Run",
---     utils.run_code,
+--     function()
+--         require("util.utils").run_code(),
+--     end,
 --     { desc = "Run code based on filetype (defined in utils)" }
 -- )
 
 api.nvim_create_user_command("Blockwise",
-    utils.blockwise_clipboard,
+    function()
+        require("util.utils").blockwise_clipboard()
+    end,
     { desc = "Set clipboard register to blockwise mode" }
 )
 
@@ -198,10 +211,10 @@ api.nvim_create_autocmd("BufWritePre", {
 
 -- Update Header
 -- --------------------------------------------------------------------------
--- Updates "Last Modified" timestamp in file headers (requires utils.change_header).
+-- Updates "Last Modified" timestamp in file headers (requires require("util.utils").change_header).
 -- api.nvim_create_autocmd("BufWritePre", {
 --     group                                       = general,
---     callback                                    = utils.change_header,
+--     callback                                    = require("util.utils").change_header,
 -- })
 
 -- Custom Filetypes
