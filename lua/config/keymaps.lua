@@ -91,69 +91,70 @@ map("n", "U",  "<C-r>",  { desc = "Redo"             }) -- Undo is 'u', Redo is 
 
 -- LuaSnip (Snippet Engine)
 -- --------------------------------------------------------------------------
-local ls_ok, ls = pcall(require, "luasnip")
-if ls_ok then
-    -- Jump to next/prev placeholder
-    map({ "i", "s" }, "<A-k>", function()
-        if ls.jumpable(1) then ls.jump(1) end
-    end, opts)
+-- We do NOT require "luasnip" here. We require it inside the functions.
 
-    map({ "i", "s" }, "<A-j>", function()
-        if ls.jumpable(-1) then ls.jump(-1) end
-    end, opts)
+-- Jump to next placeholder
+map({ "i", "s" }, "<A-k>", function()
+    local ls = require("luasnip")
+    if ls.jumpable(1) then ls.jump(1) end
+end, opts)
 
-    -- Cycle through choice nodes
-    map({ "i", "s" }, "<A-l>", function()
-        if ls.choice_active() then ls.change_choice(1) end
-    end, opts)
+-- Jump to prev placeholder
+map({ "i", "s" }, "<A-j>", function()
+    local ls = require("luasnip")
+    if ls.jumpable(-1) then ls.jump(-1) end
+end, opts)
 
-    map({ "i", "s" }, "<A-h>", function()
-        if ls.choice_active() then ls.change_choice(-1) end
-    end, opts)
-end
+-- Cycle through choice nodes
+map({ "i", "s" }, "<A-l>", function()
+    local ls = require("luasnip")
+    if ls.choice_active() then ls.change_choice(1) end
+end, opts)
+
+map({ "i", "s" }, "<A-h>", function()
+    local ls = require("luasnip")
+    if ls.choice_active() then ls.change_choice(-1) end
+end, opts)
 
 -- Snacks.nvim (Telescope Replacement)
 -- --------------------------------------------------------------------------
-local snacks_ok, snacks = pcall(require, "snacks")
-if snacks_ok then
-    -- 1. Main Pickers
-    map("n", "<leader>fs", function() Snacks.picker.smart() end,           { desc = "Smart Find Files"  })
-    map("n", "<leader>ff", function() Snacks.picker.files() end,           { desc = "Find Files"        })
-    map("n", "<leader>fr", function() Snacks.picker.recent() end,          { desc = "Recent Files"      })
-    map("n", "<leader>,",  function() Snacks.picker.buffers() end,         { desc = "Buffers"           })
-    map("n", "<leader>:",  function() Snacks.picker.command_history() end, { desc = "Command History"   })
-    
-    -- Config Shortcut
-    map("n", "<leader>fc", function() 
-        Snacks.picker.files({ cwd = vim.fn.stdpath("config") }) 
-    end, { desc = "Find Config" })
+-- 1. Main Pickers
+map("n", "<leader>fs", function() require("snacks").picker.smart() end,           { desc = "Smart Find Files"  })
+map("n", "<leader>ff", function() require("snacks").picker.files() end,           { desc = "Find Files"        })
+map("n", "<leader>fr", function() require("snacks").picker.recent() end,          { desc = "Recent Files"      })
+map("n", "<leader>,",  function() require("snacks").picker.buffers() end,         { desc = "Buffers"           })
+map("n", "<leader>:",  function() require("snacks").picker.command_history() end, { desc = "Command History"   })
 
-    -- 2. Git Integration
-    map("n", "<leader>gl", function() Snacks.picker.git_log() end,    { desc = "Git Log"    })
-    map("n", "<leader>gs", function() Snacks.picker.git_status() end, { desc = "Git Status" })
-    map("n", "<leader>gd", function() Snacks.picker.git_diff() end,   { desc = "Git Diff"   })
+-- Config Shortcut
+map("n", "<leader>fc", function() 
+    require("snacks").picker.files({ cwd = vim.fn.stdpath("config") }) 
+end, { desc = "Find Config" })
 
-    -- 3. Search & Grep
-    map("n", "<leader>sg", function() Snacks.picker.grep() end,       { desc = "Grep Project"   })
-    map("n", "<leader>sb", function() Snacks.picker.lines() end,      { desc = "Buffer Lines"   })
-    map("n", "<leader>sw", function() Snacks.picker.grep_word() end,  { desc = "Grep Word"      })
-    map("x", "<leader>sw", function() Snacks.picker.grep_word() end,  { desc = "Grep Selection" })
-    
-    -- 4. LSP & Diagnostics
-    map("n", "gd",         function() Snacks.picker.lsp_definitions() end,      { desc = "Goto Definition"           })
-    map("n", "gr",         function() Snacks.picker.lsp_references() end,       { desc = "References", nowait = true })
-    map("n", "gI",         function() Snacks.picker.lsp_implementations() end,  { desc = "Goto Implementation"       })
-    map("n", "gy",         function() Snacks.picker.lsp_type_definitions() end, { desc = "Goto Type Def"             })
-    map("n", "<leader>ss", function() Snacks.picker.lsp_symbols() end,          { desc = "LSP Symbols"               })
-    map("n", "<leader>sd", function() Snacks.picker.diagnostics() end,          { desc = "Diagnostics"               })
+-- 2. Git Integration
+map("n", "<leader>gl", function() require("snacks").picker.git_log() end,    { desc = "Git Log"    })
+map("n", "<leader>gs", function() require("snacks").picker.git_status() end, { desc = "Git Status" })
+map("n", "<leader>gd", function() require("snacks").picker.git_diff() end,   { desc = "Git Diff"   })
 
-    -- 5. Meta
-    map("n", '<leader>s"', function() Snacks.picker.registers() end,  { desc = "Registers"    })
-    map("n", "<leader>sh", function() Snacks.picker.help() end,       { desc = "Help Pages"   })
-    map("n", "<leader>sk", function() Snacks.picker.keymaps() end,    { desc = "Keymaps"      })
-    map("n", "<leader>su", function() Snacks.picker.undo() end,       { desc = "Undo History" })
-    map("n", "<leader>sR", function() Snacks.picker.resume() end,     { desc = "Resume Picker"})
-end
+-- 3. Search & Grep
+map("n", "<leader>sg", function() require("snacks").picker.grep() end,       { desc = "Grep Project"   })
+map("n", "<leader>sb", function() require("snacks").picker.lines() end,      { desc = "Buffer Lines"   })
+map("n", "<leader>sw", function() require("snacks").picker.grep_word() end,  { desc = "Grep Word"      })
+map("x", "<leader>sw", function() require("snacks").picker.grep_word() end,  { desc = "Grep Selection" })
+
+-- 4. LSP & Diagnostics
+map("n", "gd",         function() require("snacks").picker.lsp_definitions() end,      { desc = "Goto Definition"           })
+map("n", "gr",         function() require("snacks").picker.lsp_references() end,       { desc = "References", nowait = true })
+map("n", "gI",         function() require("snacks").picker.lsp_implementations() end,  { desc = "Goto Implementation"       })
+map("n", "gy",         function() require("snacks").picker.lsp_type_definitions() end, { desc = "Goto Type Def"             })
+map("n", "<leader>ss", function() require("snacks").picker.lsp_symbols() end,          { desc = "LSP Symbols"               })
+map("n", "<leader>sd", function() require("snacks").picker.diagnostics() end,          { desc = "Diagnostics"               })
+
+-- 5. Meta
+map("n", '<leader>s"', function() require("snacks").picker.registers() end,  { desc = "Registers"    })
+map("n", "<leader>sh", function() require("snacks").picker.help() end,       { desc = "Help Pages"   })
+map("n", "<leader>sk", function() require("snacks").picker.keymaps() end,    { desc = "Keymaps"      })
+map("n", "<leader>su", function() require("snacks").picker.undo() end,       { desc = "Undo History" })
+map("n", "<leader>sR", function() require("snacks").picker.resume() end,     { desc = "Resume Picker"})
 
 -- Nvim-Tree (File Explorer)
 -- --------------------------------------------------------------------------

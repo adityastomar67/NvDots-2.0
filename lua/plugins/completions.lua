@@ -19,15 +19,16 @@ return {
         config = function()
             local ls                            = require("luasnip")
             local types                         = require("luasnip.util.types")
+            local config_path                   = vim.fn.stdpath("config") -- Cache path for speed
 
             -- 1. LOAD SNIPPETS
             -- ----------------------------------------------------------------------
             -- Load custom snippets from config path (Legacy SnipMate support)
             require("luasnip.loaders.from_snipmate").lazy_load({
-                paths                           = { vim.fn.stdpath("config") .. "/bin/snippets" }
+                paths                           = { config_path .. "/bin/snippets" }
             })
             require("luasnip.loaders.from_lua").lazy_load({ 
-                paths                           = { vim.fn.stdpath("config") .. "/bin/node_snippets/" } 
+                paths                           = { config_path .. "/bin/node_snippets/" } 
             })
             
             -- Load standard community snippets (friendly-snippets) as fallback
@@ -59,7 +60,7 @@ return {
     {
         "hrsh7th/nvim-cmp",
         version                                 = false,
-        event                                   = "InsertEnter",
+        event                                   = { "InsertEnter", "CmdlineEnter" },
         dependencies                            = {
             "hrsh7th/cmp-nvim-lsp",             -- LSP source for nvim-cmp
             "hrsh7th/cmp-buffer",               -- Buffer source for nvim-cmp
@@ -68,6 +69,7 @@ return {
             "hrsh7th/cmp-nvim-lua",             -- Neovim Lua API source
             "saadparwaiz1/cmp_luasnip",         -- LuaSnip source
             "notomo/cmp-neosnippet",            -- NeoSnippet source
+            "windwp/nvim-autopairs",
             -- "zbirenbaum/copilot-cmp",        -- Copilot source (Optional)
             -- "tzachar/cmp-tabnine",           -- Tabnine source (Optional)
         },
@@ -75,6 +77,9 @@ return {
         config = function()
             local cmp                           = require("cmp")
             local luasnip                       = require("luasnip")
+
+            local cmp_autopairs = require("nvim-autopairs.completion.cmp")
+            cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
 
             -- 1. ICONS (Custom Set)
             -- ----------------------------------------------------------------------
@@ -189,16 +194,9 @@ return {
     -- ==========================================================================
     {
         "windwp/nvim-autopairs",
-        event                                   = "InsertEnter",
-        opts                                    = {},
-        
-        config = function(_, opts)
-            local np                            = require("nvim-autopairs")
-            np.setup(opts)
-
-            -- Connect autopairs to cmp for correct parens handling
-            local cmp_autopairs                 = require("nvim-autopairs.completion.cmp")
-            require("cmp").event:on("confirm_done", cmp_autopairs.on_confirm_done())
-        end
+        event  = "InsertEnter",
+        config = true, -- Simply runs require('nvim-autopairs').setup({})
+        -- We removed the cmp connection code from here and moved it to the cmp 
+        -- config above to prevent circular dependency loading issues.
     },
 }

@@ -87,8 +87,13 @@ return {
         "junegunn/limelight.vim",
         cmd  = "Limelight",
         init = function()
-            vim.g.limelight_conceal_ctermfg = 240
+            -- Limelight Configuration
+            vim.g.limelight_conceal_ctermfg = "gray"
             vim.g.limelight_conceal_guifg   = "#777777"
+            vim.g.limelight_default_coefficient = 0.7
+            
+            -- Optional: Link it to your Zen Mode toggle
+            vim.g.limelight_paragraph_span = 1
         end
     },
 }

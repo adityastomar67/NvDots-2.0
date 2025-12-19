@@ -14,39 +14,53 @@ local Utils = {}
 -- Mapping LuaSnip internal modules to a table for easier access throughout
 -- the configuration. This abstracts the 'require' calls.
 
-Utils.node_snip = {
-    -- Core Nodes
-    -- ----------------------------------------------------------------------
-    ls                  = require("luasnip"),
-    snippet             = require("luasnip").snippet,           -- s()  : The snippet object
-    snip_node           = require("luasnip").snippet_node,      -- sn() : Container for nodes
-    text_node           = require("luasnip").text_node,         -- t()  : Static text
-    insert_node         = require("luasnip").insert_node,       -- i()  : Input field
-    func_node           = require("luasnip").function_node,     -- f()  : Function/Calculated value
-    choice_node         = require("luasnip").choice_node,       -- c()  : Multiple choices
-    dynamic_node        = require("luasnip").dynamic_node,      -- d()  : Dynamic generation
+Utils.node_snip = setmetatable({}, {
+    __index = function(tbl, key)
+        -- 1. Load LuaSnip modules ONLY when a key is accessed
+        local ls = require("luasnip")
+        local extras = require("luasnip.extras")
+        local fmt = require("luasnip.extras.fmt")
 
-    -- Extras
-    -- ----------------------------------------------------------------------
-    lambda              = require("luasnip.extras").lambda,         -- l()
-    rep                 = require("luasnip.extras").rep,            -- rep(): Repeat a node
-    partial             = require("luasnip.extras").partial,        -- p()
-    match               = require("luasnip.extras").match,          -- m()
-    non_empty           = require("luasnip.extras").nonempty,       -- n()
-    dynamic_lambda      = require("luasnip.extras").dynamic_lambda, -- dl()
+        -- 2. Define the full map
+        local modules = {
+            -- Core
+            ls               = ls,
+            snippet          = ls.snippet,
+            snip_node        = ls.snippet_node,
+            text_node        = ls.text_node,
+            insert_node      = ls.insert_node,
+            func_node        = ls.function_node,
+            choice_node      = ls.choice_node,
+            dynamic_node     = ls.dynamic_node,
 
-    -- Formatting
-    -- ----------------------------------------------------------------------
-    fmt                 = require("luasnip.extras.fmt").fmt,    -- fmt(): Format strings
-    fmta                = require("luasnip.extras.fmt").fmta,   -- fmta(): Angle bracket fmt
-    isn                 = require("luasnip").indent_snippet_node,
+            -- Extras
+            lambda           = extras.lambda,
+            rep              = extras.rep,
+            partial          = extras.partial,
+            match            = extras.match,
+            non_empty        = extras.nonempty,
+            dynamic_lambda   = extras.dynamic_lambda,
 
-    -- Utilities & Events
-    -- ----------------------------------------------------------------------
-    types               = require("luasnip.util.types"),        -- Node types
-    conds               = require("luasnip.extras.expand_conditions"),
-    events              = require("luasnip.util.events"),       -- Autocmd events
-}
+            -- Formatting
+            fmt              = fmt.fmt,
+            fmta             = fmt.fmta,
+            isn              = ls.indent_snippet_node,
+
+            -- Utils
+            types            = require("luasnip.util.types"),
+            conds            = require("luasnip.extras.expand_conditions"),
+            events           = require("luasnip.util.events"),
+        }
+
+        -- 3. Cache ALL keys so this function never runs again
+        for k, v in pairs(modules) do
+            rawset(tbl, k, v)
+        end
+
+        -- 4. Return the requested key
+        return modules[key]
+    end
+})
 
 -- ==========================================================================
 -- 2. LUASNIP HELPER FUNCTIONS (SIMPLE)
