@@ -36,7 +36,7 @@ ICON_BACKUP="💾"
 ICON_SHELL="🐚"
 
 # Repository URL (CHANGE THIS IF NEEDED)
-REPO_URL="https://github.com/YOUR_USERNAME/NvDots-2.0.git"
+REPO_URL="https://github.com/adityastomar67/NvDots-2.0.git"
 INSTALL_DIR="$HOME/.config/nvim"
 
 # ------------------------------------------------------------------------------
