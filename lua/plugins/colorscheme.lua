@@ -22,17 +22,20 @@ return {
 			-- 1. UI Setup: Diagnostic Signs
 			-- ----------------------------------------------------------------------
 			-- Define custom icons for LSP diagnostics in the sign column.
-			local signs = {
-				Error = "",
-				Warn  = "",
-				Hint  = "󰠠",
-				Info  = "󰌵 ",
-			}
-
-			for type, icon in pairs(signs) do
-				local hl = "DiagnosticSign" .. type
-				vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
-			end
+			vim.diagnostic.config({
+				virtual_text  = true,
+				signs         = {
+					text      = {
+						[vim.diagnostic.severity.ERROR] = "✘",
+						[vim.diagnostic.severity.WARN]  = "",
+						[vim.diagnostic.severity.HINT]  = "⚑",
+						[vim.diagnostic.severity.INFO]  = "»",
+					},
+				},
+				underline     = true,
+				severity_sort = true,
+				float         = { border = "rounded" },
+			})
 
 			-- ----------------------------------------------------------------------
 			-- 2. Theme Configuration
@@ -42,7 +45,7 @@ return {
 				undercurl      = true, -- Enable undercurls
 				commentStyle   = { italic = true },
 				keywordStyle   = { italic = true },
-				statementStyle = { bold = true },
+				statementStyle = { bold   = true },
 				transparent    = env.transparent, -- Use setting from user_env.lua
 
 				-- ------------------------------------------------------------------

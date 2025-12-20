@@ -21,11 +21,7 @@ return {
             ensure_installed = {
                 "lua",
                 "python",
-                "markdown",
-                "markdown_inline",
                 "bash",
-                "vim",
-                "vimdoc"
             },
             sync_install    = false,
             auto_install    = true,
@@ -118,58 +114,19 @@ return {
         },
 
         config = function()
-            vim.schedule(function()
-                local lspconfig     = require("lspconfig")
-                local mason_lsp     = require("mason-lspconfig")
-                local capabilities  = require("cmp_nvim_lsp").default_capabilities()
+        -- 1. Configure Global Capabilities
+        local capabilities = require("cmp_nvim_lsp").default_capabilities()
+        
+        -- 2. Define and Enable Server Configurations
+        -- Use vim.lsp.config() to set defaults for all servers
+        vim.lsp.config("*", {
+            capabilities = capabilities,
+        })
 
-                -- 1. Diagnostic UI Configuration
-                -- ----------------------------------------------------------------------
-                vim.diagnostic.config({
-                    virtual_text        = true,         -- Show text inline
-                    signs               = true,         -- Show signs in gutter
-                    underline           = true,         -- Underline errors
-                    update_in_insert    = false,        -- Don't update while typing
-                    severity_sort       = true,         -- Sort by severity
-
-                    float = {
-                        focusable       = false,
-                        style           = "minimal",
-                        border          = "rounded",
-                        source          = "always",
-                        header          = "",
-                        prefix          = "",
-                    },
-                })
-
-                -- 2. Setup Handlers (CRITICAL)
-                -- ----------------------------------------------------------------------
-                -- This function automatically sets up every server installed via Mason
-                -- mason_lsp.setup_handlers({
-                --     function(server_name)
-                --         lspconfig[server_name].setup({
-                --             capabilities = capabilities,
-                --             -- Add 'on_attach' here if you want legacy keymaps
-                --         })
-                --     end,
-                -- })
-
-                -- 3. LspAttach Autocommand
-                -- ----------------------------------------------------------------------
-                -- Use this to set keymaps only when an LSP attaches to a buffer
-                vim.api.nvim_create_autocmd("LspAttach", {
-                    group = vim.api.nvim_create_augroup("UserLspConfig", {}),
-                    callback = function(ev)
-                        -- Example: Enable omnifunc
-                        -- vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
-                        
-                        -- NOTE: We are using Snacks.picker for LSP navigation (gd, gr, etc.)
-                        -- defined in keymaps.lua, so we don't need to duplicate them here.
-                        -- You can add buffer-local mappings here like 'K' for hover if needed.
-                    end,
-                })
-            end)
-        end,
+        -- Enable your specific servers
+        -- This automatically pulls defaults from nvim-lspconfig
+        vim.lsp.enable({ "lua_ls", "pyright" })
+    end,
     },
 
     -- ==========================================================================
