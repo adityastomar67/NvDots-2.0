@@ -94,13 +94,13 @@ map("n", "U",  "<C-r>",  { desc = "Redo"             }) -- Undo is 'u', Redo is 
 -- We do NOT require "luasnip" here. We require it inside the functions.
 
 -- Jump to next placeholder
-map({ "i", "s" }, "<A-k>", function()
+map({ "i", "s" }, "<A-j>", function()
     local ls = require("luasnip")
     if ls.jumpable(1) then ls.jump(1) end
 end, opts)
 
 -- Jump to prev placeholder
-map({ "i", "s" }, "<A-j>", function()
+map({ "i", "s" }, "<A-k>", function()
     local ls = require("luasnip")
     if ls.jumpable(-1) then ls.jump(-1) end
 end, opts)
@@ -126,8 +126,8 @@ map("n", "<leader>,",  function() require("snacks").picker.buffers() end,       
 map("n", "<leader>:",  function() require("snacks").picker.command_history() end, { desc = "Command History"   })
 
 -- Config Shortcut
-map("n", "<leader>fc", function() 
-    require("snacks").picker.files({ cwd = vim.fn.stdpath("config") }) 
+map("n", "<leader>fc", function()
+    require("snacks").picker.files({ cwd = vim.fn.stdpath("config") })
 end, { desc = "Find Config" })
 
 -- 2. Git Integration
