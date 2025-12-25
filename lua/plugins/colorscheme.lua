@@ -55,59 +55,6 @@ return {
 				-- Note: We use 'colors.theme.ui' to access palette colors.
 				overrides = function(colors)
 					local theme = colors.theme
-					return {
-						-- 1. Editor UI (Transparency & Splits)
-						LineNr                           = { bg = "NONE" },
-						Cmdline                          = { bg = "NONE" },
-						MsgArea                          = { bg = "NONE" },
-						FloatBorder                      = { bg = "NONE" },
-						Pmenu                            = { bg = "NONE" },
-						CursorLineNr                     = { bg = "NONE" },
-						SignColumn                       = { bg = "NONE" },
-						VertSplit                        = { fg = theme.ui.bg_m3, bg = "NONE" },
-						WinSeparator                     = { fg = theme.ui.bg_m3, bg = "NONE" },
-
-						-- 2. LSP Diagnostic Signs (Remove Backgrounds)
-						DiagnosticSignError              = { bg = "NONE" },
-						DiagnosticSignWarn               = { bg = "NONE" },
-						DiagnosticSignInfo               = { bg = "NONE" },
-						DiagnosticSignHint               = { bg = "NONE" },
-
-						-- 3. GitSigns (Remove Backgrounds)
-						GitSignsAdd                      = { bg = "NONE" },
-						GitSignsChange                   = { bg = "NONE" },
-						GitSignsDelete                   = { bg = "NONE" },
-
-						-- 4. Floating Windows & Borders
-						Normal                           = { bg = "NONE" },
-						NormalNC                         = { bg = "NONE" },
-						NormalFloat                      = { bg = "NONE" },
-						FloatBorder                      = { bg = "NONE" },
-
-						-- 5. Custom / Misc
-						SaveAsRoot                       = { fg = theme.ui.fg_dim, bg = "NONE" },
-
-						-- 6. Additional Diagnostic Groups (New & Legacy)
-						DiagnosticError                  = { bg = "NONE" },
-						DiagnosticWarn                   = { bg = "NONE" },
-						DiagnosticInfo                   = { bg = "NONE" },
-						DiagnosticHint                   = { bg = "NONE" },
-
-						DiagnosticVirtualTextError       = { bg = "NONE" },
-						DiagnosticVirtualTextWarn        = { bg = "NONE" },
-						DiagnosticVirtualTextInfo        = { bg = "NONE" },
-						DiagnosticVirtualTextHint        = { bg = "NONE" },
-
-						DiagnosticUnderlineError         = { bg = "NONE" },
-						DiagnosticUnderlineWarn          = { bg = "NONE" },
-						DiagnosticUnderlineInfo          = { bg = "NONE" },
-						DiagnosticUnderlineHint          = { bg = "NONE" },
-
-						LspDiagnosticsDefaultError       = { bg = "NONE" },
-						LspDiagnosticsDefaultWarning     = { bg = "NONE" },
-						LspDiagnosticsDefaultInformation = { bg = "NONE" },
-						LspDiagnosticsDefaultHint        = { bg = "NONE" },
-					}
 				end,
 			})
 
@@ -116,6 +63,67 @@ return {
 			-- ----------------------------------------------------------------------
 			-- Applies the theme defined in user_env (defaults to "kanagawa")
 			vim.cmd.colorscheme(env.theme)
+
+			-- ----------------------------------------------------------------------
+			-- 4. Overwriting some stubborn HL_Groups
+			-- ----------------------------------------------------------------------
+			local groups = {
+				-- 1. Editor UI
+				"LineNr",
+				"Cmdline",
+				"MsgArea",
+				"FloatBorder",
+				"Pmenu",
+				"CursorLineNr",
+				"SignColumn",
+				"VertSplit",
+				"WinSeparator",
+
+				-- 2. LSP Diagnostic Signs
+				"DiagnosticSignError",
+				"DiagnosticSignWarn",
+				"DiagnosticSignInfo",
+				"DiagnosticSignHint",
+
+				-- 3. GitSigns
+				"GitSignsAdd",
+				"GitSignsChange",
+				"GitSignsDelete",
+
+				-- 4. Floating Windows & Borders
+				"Normal",
+				"NormalNC",
+				"NormalFloat",
+				-- "FloatBorder" (Duplicate, already listed above)
+
+				-- 5. Custom / Misc
+				"SaveAsRoot",
+
+				-- 6. Additional Diagnostic Groups
+				"DiagnosticError",
+				"DiagnosticWarn",
+				"DiagnosticInfo",
+				"DiagnosticHint",
+
+				"DiagnosticVirtualTextError",
+				"DiagnosticVirtualTextWarn",
+				"DiagnosticVirtualTextInfo",
+				"DiagnosticVirtualTextHint",
+
+				"DiagnosticUnderlineError",
+				"DiagnosticUnderlineWarn",
+				"DiagnosticUnderlineInfo",
+				"DiagnosticUnderlineHint",
+
+				"LspDiagnosticsDefaultError",
+				"LspDiagnosticsDefaultWarning",
+				"LspDiagnosticsDefaultInformation",
+				"LspDiagnosticsDefaultHint",
+			}
+
+			for _, g in ipairs(groups) do
+				vim.api.nvim_set_hl(0, g, { bg = "none" })
+			end
 		end,
 	},
 }
