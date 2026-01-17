@@ -16,10 +16,10 @@ return {
         keys            = {
             { "<leader>e", "<cmd>NvimTreeToggle<cr>", desc = "Toggle Explorer" },
         },
-        
+
         config = function()
             local nvim_tree = require("nvim-tree")
-            
+
             -- ----------------------------------------------------------------------
             -- Setup Options
             -- ----------------------------------------------------------------------
@@ -30,29 +30,29 @@ return {
                 hijack_netrw            = true,
                 sync_root_with_cwd      = true,
                 auto_reload_on_write    = true,
-                
+
                 -- Update behavior
                 update_focused_file = {
                     enable              = true,
-                    update_root         = true 
+                    update_root         = true
                 },
-                
+
                 -- Git integration
                 git = {
                     enable              = true,
                     ignore              = true,
-                    timeout             = 500 
+                    timeout             = 500
                 },
-                
+
                 -- Filters
                 filters = {
-                    custom              = { ".git" } 
+                    custom              = { ".git" }
                 },
-                
+
                 -- UI / View
                 view = {
                     width               = 30,
-                    side                = "left" 
+                    side                = "left"
                 },
 
                 -- Renderer & Icons
@@ -91,9 +91,18 @@ return {
             vim.g.limelight_conceal_ctermfg = "gray"
             vim.g.limelight_conceal_guifg   = "#777777"
             vim.g.limelight_default_coefficient = 0.7
-            
+
             -- Optional: Link it to your Zen Mode toggle
             vim.g.limelight_paragraph_span = 1
         end
     },
+    {
+        "adityastomar67/italicize",
+        config = function()
+            require("italicize").setup({
+                transparency = true,
+                italics = true,
+            })
+        end
+    }
 }

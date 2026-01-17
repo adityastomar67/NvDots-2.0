@@ -9,7 +9,7 @@
 -- 1. Load User Environment
 -- --------------------------------------------------------------------------
 -- Import environment-specific configurations (paths, toggles, keys).
-local env            = require("config.user_env")
+local env = require("config.user_env")
 
 -- --------------------------------------------------------------------------
 -- 2. Set Global Leader Keys
@@ -17,8 +17,8 @@ local env            = require("config.user_env")
 -- It is crucial to set these BEFORE loading lazy.nvim or any plugins,
 -- as plugins often check the leader key during their setup.
 
-vim.g.mapleader      = env.config.mapleader       -- Primary leader key (e.g., Space)
-vim.g.maplocalleader = env.config.maplocalleader  -- Local leader key (e.g., Backslash)
+vim.g.mapleader = env.config.mapleader -- Primary leader key (e.g., Space)
+vim.g.maplocalleader = env.config.maplocalleader -- Local leader key (e.g., Backslash)
 
 -- --------------------------------------------------------------------------
 -- 3. Bootstrap Plugin Manager
