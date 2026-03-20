@@ -1,29 +1,18 @@
 -- ==========================================================================
--- COMPLETION CONFIGURATION (Optimized)
+-- COMPLETION CONFIGURATION (Optimized with blink.cmp)
 -- ==========================================================================
 -- lua/plugins/completion.lua
 
--- Define icons once (outside the module to save memory on reload)
-local kind_icons = {
-    Text = "", Method = "󰆧", Function = "󰊕", Constructor = "",
-    Field = "󰇽", Variable = "󰂡", Class = "󰠱", Interface = "",
-    Module = "", Property = "󰜢", Unit = "", Value = "󰎠",
-    Enum = "", Keyword = "󰌋", Snippet = "", Color = "󰏘",
-    File = "󰈙", Reference = "", Folder = "󰉋", EnumMember = "",
-    Constant = "󰏿", Struct = "", Event = "", Operator = "󰆕",
-    TypeParameter = "󰅲", Copilot = "",
-}
-
 return {
     -- ==========================================================================
-    -- 1. SNIPPET ENGINE
+    -- 1. SNIPPET ENGINE (Kept for your custom local snippets)
     -- ==========================================================================
     {
         "L3MON4D3/LuaSnip",
         version = "v2.*",
         build = "make install_jsregexp",
         dependencies = { "rafamadriz/friendly-snippets" },
-        event = "InsertEnter", -- Lazy load on Insert
+        event = "InsertEnter",
 
         config = function()
             local ls = require("luasnip")
@@ -54,97 +43,120 @@ return {
     },
 
     -- ==========================================================================
-    -- 2. COMPLETION ENGINE
+    -- 2. COMPLETION ENGINE (blink.cmp)
     -- ==========================================================================
     {
-        "hrsh7th/nvim-cmp",
-        version = false,
-        event = { "InsertEnter", "CmdlineEnter" },
+        'saghen/blink.cmp',
+        version = '1.*',
         dependencies = {
-            "hrsh7th/cmp-nvim-lsp",
-            "hrsh7th/cmp-buffer",
-            "hrsh7th/cmp-path",
-            "hrsh7th/cmp-cmdline",
-            "saadparwaiz1/cmp_luasnip",
-            "windwp/nvim-autopairs",
+            'brenoprata10/nvim-highlight-colors',
+            'folke/lazydev.nvim',
+            'MahanRahmati/blink-nerdfont.nvim',
+            'moyiz/blink-emoji.nvim',
+            -- 'rafamadriz/friendly-snippets', -- Removed here as it is loaded by LuaSnip above
+            {
+                'Kaiser-Yang/blink-cmp-git',
+                dependencies = { 'nvim-lua/plenary.nvim' },
+            },
+            {
+                'onsails/lspkind.nvim',
+                opts = {},
+            },
         },
 
-        config = function()
-            local cmp = require("cmp")
-            local luasnip = require("luasnip")
+        ---@module 'blink.cmp'
+        ---@type blink.cmp.Config
+        opts = {
+            -- Tell blink to use LuaSnip to power its snippet expansions
+            snippets = { preset = 'luasnip' },
 
-            -- Integration with Autopairs
-            local cmp_autopairs = require("nvim-autopairs.completion.cmp")
-            cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
+            appearance = { nerd_font_variant = 'mono' },
+            signature = { enabled = true },
 
-            cmp.setup({
-                snippet = {
-                    expand = function(args)
-                        luasnip.lsp_expand(args.body)
-                    end,
+            keymap = {
+                preset = 'default',
+                ['<CR>'] = { 'accept', 'fallback' },
+                ['<C-k>'] = { 'fallback' }, -- Override blink.cmp's default signature help to allow global `<C-k>` (Up) mapping to run
+            },
+
+            completion = {
+                documentation = { auto_show = true },
+                list = { selection = { preselect = true, auto_insert = true } },
+                menu = {
+                    draw = {
+                        components = {
+                            kind_icon = {
+                                text = function(ctx)
+                                    local icon = ctx.kind_icon
+                                    if ctx.item.source_name == 'LSP' then
+                                        local color_item = require('nvim-highlight-colors').format(ctx.item.documentation, { kind = ctx.kind })
+                                        if color_item and color_item.abbr then
+                                            icon = color_item.abbr
+                                        else
+                                            icon = require('lspkind').symbolic(ctx.kind, { mode = 'symbol' })
+                                        end
+                                    elseif vim.tbl_contains({ 'Path' }, ctx.source_name) then
+                                        local dev_icon, _ = require('nvim-web-devicons').get_icon(ctx.label)
+                                        if dev_icon then
+                                            icon = dev_icon
+                                        end
+                                    end
+                                    return icon .. ctx.icon_gap
+                                end,
+                                highlight = function(ctx)
+                                    local highlight = 'BlinkCmpKind' .. ctx.kind
+                                    if ctx.item.source_name == 'LSP' then
+                                        local color_item = require('nvim-highlight-colors').format(ctx.item.documentation, { kind = ctx.kind })
+                                        if color_item and color_item.abbr_hl_group then
+                                            highlight = color_item.abbr_hl_group
+                                        end
+                                    end
+                                    return highlight
+                                end,
+                            },
+                        },
+                    },
                 },
+            },
 
-                window = {
-                    completion    = cmp.config.window.bordered(),
-                    documentation = cmp.config.window.bordered(),
+            sources = {
+                default = { 'git', 'lsp', 'path', 'snippets', 'buffer', 'emoji', 'nerdfont' },
+                providers = {
+                    git = {
+                        module = 'blink-cmp-git',
+                        name = 'Git',
+                        enabled = function()
+                            return vim.tbl_contains({ 'octo', 'gitcommit', 'markdown' }, vim.bo.filetype)
+                        end,
+                        opts = {
+                            -- TODO: get neogit working
+                        },
+                    },
+                    lazydev = {
+                        name = 'LazyDev',
+                        module = 'lazydev.integrations.blink',
+                        score_offset = 100,
+                    },
+                    nerdfont = {
+                        module = 'blink-nerdfont',
+                        name = 'Nerd Fonts',
+                        score_offset = 15,
+                        opts = { insert = true },
+                    },
+                    emoji = {
+                        module = 'blink-emoji',
+                        name = 'Emoji',
+                        score_offset = 25,
+                        opts = { insert = true },
+                    },
                 },
-
-                -- Use your existing keymap config
-                mapping = cmp.mapping.preset.insert(require("config.keymaps").cmp(cmp, luasnip)),
-
-                formatting = {
-                    fields = { "kind", "abbr", "menu" }, -- Icon, Text, Source
-                    format = function(entry, vim_item)
-                        -- 1. Set Icon
-                        vim_item.kind = string.format("%s %s", kind_icons[vim_item.kind] or "", vim_item.kind)
-
-                        -- 2. Set Source Menu
-                        vim_item.menu = ({
-                            nvim_lsp = "[LSP]",
-                            luasnip  = "[Snip]",
-                            buffer   = "[Buf]",
-                            path     = "[Path]",
-                        })[entry.source.name]
-
-                        return vim_item
-                    end,
+                per_filetype = {
+                    lua = { inherit_defaults = true, 'lazydev' },
                 },
-
-                sources = cmp.config.sources({
-                    { name = "nvim_lsp", group_index = 1 }, -- High Priority
-                    { name = "luasnip",  group_index = 1 }, -- High Priority
-                    { name = "path",     group_index = 2 },
-                }, {
-                    { name = "buffer",   group_index = 3 }, -- Lower Priority (reduces noise)
-                }),
-
-                experimental = {
-                    ghost_text = { hl_group = "Comment" },
-                },
-            })
-
-            -- ==================================================================
-            -- MISSING CONFIG: Command Line Setup
-            -- ==================================================================
-
-            -- Search (/)
-            cmp.setup.cmdline('/', {
-                mapping = cmp.mapping.preset.cmdline(),
-                sources = {
-                    { name = 'buffer' }
-                }
-            })
-
-            -- Command (:)
-            cmp.setup.cmdline(':', {
-                mapping = cmp.mapping.preset.cmdline(),
-                sources = cmp.config.sources({
-                    { name = 'path' }
-                }, {
-                    { name = 'cmdline' }
-                })
-            })
-        end,
+            },
+            fuzzy = { implementation = 'prefer_rust_with_warning' },
+        },
+        opts_extend = { 'sources.default' },
     },
 
     -- ==========================================================================

@@ -110,12 +110,12 @@ return {
         dependencies    = {
             "williamboman/mason.nvim",
             "williamboman/mason-lspconfig.nvim",
-            "hrsh7th/cmp-nvim-lsp", -- Links LSP to Autocompletion
+            "saghen/blink.cmp",
         },
 
         config = function()
         -- 1. Configure Global Capabilities
-        local capabilities = require("cmp_nvim_lsp").default_capabilities()
+        local capabilities = require("blink.cmp").get_lsp_capabilities()
         
         -- 2. Define and Enable Server Configurations
         -- Use vim.lsp.config() to set defaults for all servers
