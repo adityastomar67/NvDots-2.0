@@ -133,7 +133,7 @@ return {
                 sources = {
                     { name = 'buffer' }
                 }
-            }
+            })
 
             -- Command (:)
             cmp.setup.cmdline(':', {
