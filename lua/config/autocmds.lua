@@ -98,7 +98,7 @@ api.nvim_create_user_command("SaveAsRoot",
 -- )
 
  -- Create Command for Editing Snippets
-api.nvim_create_user_command("LuaSnipEdit", 
+api.nvim_create_user_command("LuaSnipEdit",
     function()
         require("luasnip.loaders.from_lua").edit_snippet_files()
     end, {}
@@ -217,28 +217,33 @@ api.nvim_create_autocmd("BufWritePre", {
 --     callback                                    = require("util.utils").change_header,
 -- })
 
--- Custom Filetypes
--- --------------------------------------------------------------------------
-api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
-    pattern                                     = { "*.conf", "config" },
-    command                                     = "set filetype=config",
+vim.filetype.add({
+    extension = {
+        conf = "config",
+        ejs = "html",
+    },
+    filename = {
+        ["config"] = "config",
+    }
 })
 
-api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
-    pattern                                     = "*.ejs",
-    command                                     = "set filetype=html",
-})
-
--- Large File Optimization
+-- Large File Optimization & Zen Mode
 -- --------------------------------------------------------------------------
--- Disables heavy features (Syntax, Treesitter) for files > 20,000 lines.
+-- Disables heavy features for files > 20,000 lines and loads zen on first buffer enter.
 api.nvim_create_autocmd("BufEnter", {
     group                                       = general,
     pattern                                     = "*",
     callback                                    = function()
+        -- 1. Check for large file
         if vim.api.nvim_buf_line_count(0) > 20000 then
             vim.cmd("syntax off")
             vim.cmd("TSDisable") -- Note: Ensure TSDisable command exists or use pcall
+        end
+
+        -- 2. Trigger zen mode setup (run once)
+        if not _G.ZenLoaded then
+            require("util.zen")
+            _G.ZenLoaded = true
         end
     end,
 })
@@ -258,18 +263,10 @@ api.nvim_create_autocmd("BufEnter", {
 --     end,
 -- })
 
--- Starts the Toggler Fucntion 
-api.nvim_create_autocmd("InsertEnter", {
-    once = true, -- Ensures this only runs the first time you enter Insert mode
-    callback = function()
-        require("util.toggler").setup(env_config.toggles or {})
-    end,
-})
-
--- Starts the zen Fucntion after BufEnter
-api.nvim_create_autocmd("BufEnter", {
-    once = true, -- Ensures this only runs the first time you enter Insert mode
-    callback = function()
-        require("util.zen")
-    end,
-})
+-- Starts the Toggler Function
+vim.schedule(function()
+    local has_toggler, toggler = pcall(require, "util.toggler")
+    if has_toggler then
+        toggler.setup(env_config.toggles or {})
+    end
+end)

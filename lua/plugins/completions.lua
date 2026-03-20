@@ -1,53 +1,52 @@
 -- ==========================================================================
--- COMPLETION & SNIPPETS CONFIGURATION
+-- COMPLETION CONFIGURATION (Optimized)
 -- ==========================================================================
 -- lua/plugins/completion.lua
--- This file sets up the autocompletion engine (nvim-cmp), snippet engine (LuaSnip),
--- and related utilities like auto-pairs and AI assistants.
+
+-- Define icons once (outside the module to save memory on reload)
+local kind_icons = {
+    Text = "", Method = "󰆧", Function = "󰊕", Constructor = "",
+    Field = "󰇽", Variable = "󰂡", Class = "󰠱", Interface = "",
+    Module = "", Property = "󰜢", Unit = "", Value = "󰎠",
+    Enum = "", Keyword = "󰌋", Snippet = "", Color = "󰏘",
+    File = "󰈙", Reference = "", Folder = "󰉋", EnumMember = "",
+    Constant = "󰏿", Struct = "", Event = "", Operator = "󰆕",
+    TypeParameter = "󰅲", Copilot = "",
+}
 
 return {
     -- ==========================================================================
-    -- 1. SNIPPET ENGINE (LuaSnip)
+    -- 1. SNIPPET ENGINE
     -- ==========================================================================
     {
         "L3MON4D3/LuaSnip",
-        version                                 = "v2.*", -- Replace <CurrentMajor> by the latest released major (first is v2)
-        build                                   = "make install_jsregexp",
-        dependencies                            = { "rafamadriz/friendly-snippets" },
-        event                                   = "InsertEnter", -- Load early for snippets
-        
-        config = function()
-            local ls                            = require("luasnip")
-            local types                         = require("luasnip.util.types")
-            local config_path                   = vim.fn.stdpath("config") -- Cache path for speed
+        version = "v2.*",
+        build = "make install_jsregexp",
+        dependencies = { "rafamadriz/friendly-snippets" },
+        event = "InsertEnter", -- Lazy load on Insert
 
-            -- 1. LOAD SNIPPETS
-            -- ----------------------------------------------------------------------
-            -- Load custom snippets from config path (Legacy SnipMate support)
-            require("luasnip.loaders.from_snipmate").lazy_load({
-                paths                           = { config_path .. "/bin/snippets" }
-            })
-            require("luasnip.loaders.from_lua").lazy_load({ 
-                paths                           = { config_path .. "/bin/node_snippets/" } 
-            })
-            
-            -- Load standard community snippets (friendly-snippets) as fallback
+        config = function()
+            local ls = require("luasnip")
+            local types = require("luasnip.util.types")
+            local config_path = vim.fn.stdpath("config")
+
+            -- Loaders
             require("luasnip.loaders.from_vscode").lazy_load()
 
-            -- 2. CONFIGURATION
-            -- ----------------------------------------------------------------------
-            ls.config.setup({
-                history                         = true,                         -- Keep around last snippet local to jump back
-                update_events                   = "TextChanged,TextChangedI",   -- Update dynamic snippets as you type
-                enable_autosnippets             = true,                         -- Enable auto-trigger snippets
-                store_selection_keys            = "<A-p>",                      -- Key to store selection for visual snippets
+            -- Custom User Snippets (Fail silently if folders don't exist)
+            pcall(function()
+                require("luasnip.loaders.from_snipmate").lazy_load({ paths = { config_path .. "/bin/snippets" } })
+                require("luasnip.loaders.from_lua").lazy_load({ paths = { config_path .. "/bin/node_snippets/" } })
+            end)
 
-                -- Visual feedback for Choice Nodes (multiple options in a snippet)
-                ext_opts                        = {
-                    [types.choiceNode]          = {
-                        active                  = {
-                            virt_text           = { { "●", "GruvboxOrange" } },
-                        },
+            ls.config.setup({
+                history = true,
+                update_events = "TextChanged,TextChangedI",
+                enable_autosnippets = true,
+                store_selection_keys = "<A-p>",
+                ext_opts = {
+                    [types.choiceNode] = {
+                        active = { virt_text = { { "●", "GruvboxOrange" } } },
                     },
                 },
             })
@@ -55,148 +54,105 @@ return {
     },
 
     -- ==========================================================================
-    -- 2. COMPLETION ENGINE (Cmp)
+    -- 2. COMPLETION ENGINE
     -- ==========================================================================
     {
         "hrsh7th/nvim-cmp",
-        version                                 = false,
-        event                                   = { "InsertEnter", "CmdlineEnter" },
-        dependencies                            = {
-            "hrsh7th/cmp-nvim-lsp",             -- LSP source for nvim-cmp
-            "hrsh7th/cmp-buffer",               -- Buffer source for nvim-cmp
-            "hrsh7th/cmp-path",                 -- Path source for nvim-cmp
-            "hrsh7th/cmp-cmdline",              -- Cmdline source for nvim-cmp
-            "hrsh7th/cmp-nvim-lua",             -- Neovim Lua API source
-            "saadparwaiz1/cmp_luasnip",         -- LuaSnip source
-            "notomo/cmp-neosnippet",            -- NeoSnippet source
+        version = false,
+        event = { "InsertEnter", "CmdlineEnter" },
+        dependencies = {
+            "hrsh7th/cmp-nvim-lsp",
+            "hrsh7th/cmp-buffer",
+            "hrsh7th/cmp-path",
+            "hrsh7th/cmp-cmdline",
+            "saadparwaiz1/cmp_luasnip",
             "windwp/nvim-autopairs",
-            -- "zbirenbaum/copilot-cmp",        -- Copilot source (Optional)
-            -- "tzachar/cmp-tabnine",           -- Tabnine source (Optional)
         },
-        
-        config = function()
-            local cmp                           = require("cmp")
-            local luasnip                       = require("luasnip")
 
+        config = function()
+            local cmp = require("cmp")
+            local luasnip = require("luasnip")
+
+            -- Integration with Autopairs
             local cmp_autopairs = require("nvim-autopairs.completion.cmp")
             cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
 
-            -- 1. ICONS (Custom Set)
-            -- ----------------------------------------------------------------------
-            local kind_icons = {
-                Copilot                         = "",
-                Text                            = "",
-                Method                          = "",
-                Function                        = "",
-                Constructor                     = "",
-                Field                           = "ﰠ",
-                Variable                        = "",
-                Class                           = "ﴯ",
-                Interface                       = "",
-                Module                          = "",
-                Property                        = "ﰠ",
-                Unit                            = "塞",
-                Value                           = "",
-                Enum                            = "",
-                Keyword                         = "",
-                Snippet                         = "",
-                Color                           = "",
-                File                            = "",
-                Reference                       = "",
-                Folder                          = "",
-                EnumMember                      = "",
-                Constant                        = "",
-                Struct                          = "פּ",
-                Event                           = "",
-                Operator                        = "",
-                TypeParameter                   = "",
-                Table                           = " ",
-                Object                          = "",
-                Tag                             = " ",
-                Array                           = " ",
-                Boolean                         = "蘒",
-                Number                          = "",
-                String                          = "",
-                Calendar                        = " ",
-                Watch                           = "",
-            }
-
-            -- 2. SETUP
-            -- ----------------------------------------------------------------------
             cmp.setup({
-                -- Snippet Expansion Logic
                 snippet = {
                     expand = function(args)
                         luasnip.lsp_expand(args.body)
                     end,
                 },
 
-                -- UI Customization
                 window = {
-                    completion                  = cmp.config.window.bordered(),
-                    documentation               = cmp.config.window.bordered(),
+                    completion    = cmp.config.window.bordered(),
+                    documentation = cmp.config.window.bordered(),
                 },
 
-                -- Key Mappings
+                -- Use your existing keymap config
                 mapping = cmp.mapping.preset.insert(require("config.keymaps").cmp(cmp, luasnip)),
 
-                -- Formatting (Icons + Text)
                 formatting = {
-                    fields                      = { "abbr", "kind", "menu" },
-                    format                      = function(_, vim_item)
-                        -- Concatenate icon with kind name
-                        vim_item.kind           = string.format("%s %s", kind_icons[vim_item.kind], vim_item.kind)
+                    fields = { "kind", "abbr", "menu" }, -- Icon, Text, Source
+                    format = function(entry, vim_item)
+                        -- 1. Set Icon
+                        vim_item.kind = string.format("%s %s", kind_icons[vim_item.kind] or "", vim_item.kind)
+
+                        -- 2. Set Source Menu
+                        vim_item.menu = ({
+                            nvim_lsp = "[LSP]",
+                            luasnip  = "[Snip]",
+                            buffer   = "[Buf]",
+                            path     = "[Path]",
+                        })[entry.source.name]
+
                         return vim_item
                     end,
                 },
 
-                -- Sources (Order determines priority)
-                sources = {
-                    -- { name = "copilot"   , group_index = 2 },
-                    -- { name = "cmp_tabnine", group_index = 2 },
-                    { name = "nvim_lsp"     , group_index = 2 },
-                    { name = "luasnip"      , group_index = 2 },
-                    { name = "buffer"       , group_index = 2 },  -- Text in the current Buffer
-                    { name = "path"         , group_index = 2 },
-                },
+                sources = cmp.config.sources({
+                    { name = "nvim_lsp", group_index = 1 }, -- High Priority
+                    { name = "luasnip",  group_index = 1 }, -- High Priority
+                    { name = "path",     group_index = 2 },
+                }, {
+                    { name = "buffer",   group_index = 3 }, -- Lower Priority (reduces noise)
+                }),
 
-                -- Experimental Features
                 experimental = {
-                    ghost_text                  = true,
-                    native_menu                 = false,
+                    ghost_text = { hl_group = "Comment" },
                 },
+            })
+
+            -- ==================================================================
+            -- MISSING CONFIG: Command Line Setup
+            -- ==================================================================
+
+            -- Search (/)
+            cmp.setup.cmdline('/', {
+                mapping = cmp.mapping.preset.cmdline(),
+                sources = {
+                    { name = 'buffer' }
+                }
+            }
+
+            -- Command (:)
+            cmp.setup.cmdline(':', {
+                mapping = cmp.mapping.preset.cmdline(),
+                sources = cmp.config.sources({
+                    { name = 'path' }
+                }, {
+                    { name = 'cmdline' }
+                })
             })
         end,
     },
 
     -- ==========================================================================
-    -- 3. AI ASSISTANTS (Copilot & Tabnine)
-    -- ==========================================================================
-    -- {
-    --     "zbirenbaum/copilot.lua",
-    --     cmd                                     = "Copilot",
-    --     event                                   = "InsertEnter",
-    --     config = function()
-    --         require("copilot").setup({
-    --             suggestion                      = { enabled = false }, -- Disabled because we use copilot-cmp
-    --             panel                           = { enabled = false },
-    --         })
-    --     end,
-    -- },
-    -- {
-    --     "tzachar/cmp-tabnine",
-    --     build                                   = "./install.sh",
-    --     dependencies                            = "hrsh7th/nvim-cmp",
-    -- },
-
-    -- ==========================================================================
-    -- 4. UTILS (Autopairs)
+    -- 3. UTILS
     -- ==========================================================================
     {
         "windwp/nvim-autopairs",
-        event  = "InsertEnter",
-        config = true, -- Simply runs require('nvim-autopairs').setup({})
-        -- We removed the cmp connection code from here and moved it to the cmp 
-        -- config above to prevent circular dependency loading issues.
+        event = "InsertEnter",
+        config = true,
     },
 }

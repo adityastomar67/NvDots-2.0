@@ -55,6 +55,11 @@ return {
 				-- Note: We use 'colors.theme.ui' to access palette colors.
 				overrides = function(colors)
 					local theme = colors.theme
+					return {
+                        -- You can leave this empty, but the "return {}" MUST exist.
+                        -- Example:
+                        -- Comment = { italic = true },
+                    }
 				end,
 			})
 

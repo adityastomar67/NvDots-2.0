@@ -196,5 +196,13 @@ end
 -- 6. FINAL ADJUSTMENTS
 -- ==========================================================================
 
+-- Since you are on macOS (based on /opt/homebrew paths): [OPTIONAL]
+vim.g.clipboard = {
+    name = 'macOS-clipboard',
+    copy = { ['+'] = 'pbcopy', ['*'] = 'pbcopy' },
+    paste = { ['+'] = 'pbpaste', ['*'] = 'pbpaste' },
+    cache_enabled = 0,
+}
+
 -- Set a minimal statusline text for the fallback mode
 vim.cmd([[let &statusline='%#Normal# ']])

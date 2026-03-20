@@ -4,6 +4,7 @@
 -- init.lua
 -- This is the main entry point for Neovim. It loads user settings, sets
 -- global leader keys, and then bootstraps the lazy.nvim package manager.
+vim.loader.enable()
 
 -- --------------------------------------------------------------------------
 -- 1. Load User Environment
